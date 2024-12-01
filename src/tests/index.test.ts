@@ -229,20 +229,20 @@ describe("zuniq", () => {
     });
   });
 
-  describe("input format variations", () => {
-    it("should handle mixed line endings", async () => {
+  describe("input format variations should", () => {
+    it("handle mixed line endings", async () => {
       const content = "line1\nline1\r\nline2\nline2\r\nline3\nline3\r\n";
       const { out } = await zuniq({ content });
       expect(out).toEqual("line1\nline2\nline3\n");
     });
 
-    it("should handle lines with special characters", async () => {
+    it("handle lines with special characters", async () => {
       const content = "line1\nline1\nline@2\nline@2\nline#3\nline#3";
       const { out } = await zuniq({ content });
       expect(out).toEqual("line1\nline@2\nline#3");
     });
 
-    it("should handle very large input", async () => {
+    it("handle very large input", async () => {
       const largeContent = new Array(10)
         .fill(0)
         .map((_i, i) =>
@@ -256,19 +256,19 @@ describe("zuniq", () => {
       );
     });
 
-    it("should handle input with only repeated lines", async () => {
+    it("handle input with only repeated lines", async () => {
       const content = "line1\nline1\nline1\nline1\nline1";
       const { out } = await zuniq({ content });
       expect(out).toEqual("line1");
     });
 
-    it("should handle input with empty lines", async () => {
+    it("handle input with empty lines", async () => {
       const content = "\n\nline1\n\nline2\n\nline3\n\n";
       const { out } = await zuniq({ content });
       expect(out).toEqual("\nline1\nline2\nline3\n");
     });
 
-    it("should correctly return the output if there is a single newline at the end", async () => {
+    it("correctly return the output if there is a single newline at the end", async () => {
       const { out } = await zuniq({ filePath: testFilePathWithNewlineEnd });
       expect(out).toEqual(
         ["line1", "line2", "line3", "line4"].join("\n") + "\n"
