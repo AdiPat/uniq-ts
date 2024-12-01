@@ -7,7 +7,6 @@ describe("zuniq", () => {
   const testFilePath = "./test_data/test.txt";
   const countriesFilePath = "./test_data/countries.txt";
   const outputFilePath = "./test_data/output.txt";
-
   const warningInvalidPathValidContent = `Warning: Invalid file path 'invalid_path'. Using provided content.`;
   const errorBothFileAndContent =
     "Error: Provide either a file path or content, not both";
@@ -200,8 +199,8 @@ describe("zuniq", () => {
     });
   });
 
-  describe("when 'unique' is true", () => {
-    it("log warning message if 'repeated' is true that both used together will give empty result", async () => {
+  describe("'unique' arg", () => {
+    it("log warning message if 'repeated' is true and 'unique' is true that both used together will give empty result", async () => {
       const consoleWarnSpy = vi.spyOn(console, "warn");
       const { out } = await zuniq({
         filePath: testFilePath,
@@ -212,6 +211,20 @@ describe("zuniq", () => {
       expect(consoleWarnSpy).toHaveBeenCalledWith(
         "Warning: Provide either 'repeated' or 'unique', not both."
       );
+    });
+
+    it("should assume 'unique' as true if 'repeated' is not provided", async () => {
+      const { out } = await zuniq({ filePath: testFilePath, unique: true });
+      expect(out).toEqual(["line1", "line2", "line3", "line4"].join("\n"));
+    });
+
+    it("should assume 'unique' as true if 'repeated' is false", async () => {
+      const { out } = await zuniq({
+        filePath: testFilePath,
+        repeated: false,
+        unique: true,
+      });
+      expect(out).toEqual(["line1", "line2", "line3", "line4"].join("\n"));
     });
   });
 });
