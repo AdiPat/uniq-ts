@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { zuniq } from "../index";
 import fs from "fs";
 
@@ -40,5 +40,25 @@ describe("zuniq", () => {
     const content = "line1\nline1\nline2\nline2\nline3\nline3";
     const { out } = await zuniq({ content });
     expect(out).toEqual("line1\nline2\nline3");
+  });
+
+  it("should throw an error if both valid file path and content are provided", async () => {
+    const promise = zuniq({
+      filePath: testFilePath,
+      content: "line1\nline2\nline3",
+    });
+    await expect(promise).rejects.toThrow(
+      "Error: Provide either a file path or content, not both"
+    );
+  });
+
+  it("use 'content' if file path is invalid and log a warning message", async () => {
+    const consoleWarnSpy = vi.spyOn(console, "warn");
+    const content = "line1\nline2\nline3";
+    const { out } = await zuniq({ filePath: "invalid_path", content });
+    expect(out).toEqual("line1\nline2\nline3");
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      "Warning: Invalid file path 'invalid_path'. Using provided content."
+    );
   });
 });
