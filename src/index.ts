@@ -1,1 +1,3 @@
-console.log("Hello, world!");
+export function zuniq() {
+  throw new Error("Not implemented");
+}
