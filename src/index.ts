@@ -10,22 +10,24 @@ export async function zuniq({
   out: string;
 }> {
   if (content) {
-    const lines = content.split("\n");
-    const uniqueLines = lines.filter((line, index) => {
-      return index === 0 || lines[index - 1] !== line;
-    });
-    const out = uniqueLines.join("\n").trim();
-    return { out };
+    return {
+      out: processContent(content),
+    };
   }
 
   await assertFileExists(filePath);
   const fileContent = await fs.readFile(filePath, "utf-8");
-  const lines = fileContent.split("\n");
+  const out = processContent(fileContent);
+  return { out };
+}
+
+const processContent = (content: string) => {
+  const lines = content.split("\n");
   const uniqueLines = lines.filter((line, index) => {
     return index === 0 || lines[index - 1] !== line;
   });
-  return { out: uniqueLines.join("\n") };
-}
+  return uniqueLines.join("\n").trim();
+};
 
 const assertFileExists = async (filePath: string) => {
   try {
