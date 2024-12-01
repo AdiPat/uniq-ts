@@ -181,4 +181,17 @@ describe("zuniq", () => {
       await expect(promise).rejects.toThrow(errorBothFileAndContent);
     });
   });
+
+  describe("when 'unique' is true", () => {
+    it("throw an error if 'repeated' is true and file path is provided", async () => {
+      const promise = zuniq({
+        filePath: testFilePath,
+        unique: true,
+        repeated: true,
+      });
+      await expect(promise).rejects.toThrow(
+        "Error: Provide either 'repeated' or 'unique', not both"
+      );
+    });
+  });
 });

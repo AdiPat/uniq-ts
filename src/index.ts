@@ -6,15 +6,21 @@ export async function zuniq({
   outputFilePath,
   count,
   repeated,
+  unique,
 }: {
   filePath?: string;
   content?: string;
   outputFilePath?: string;
   count?: boolean;
   repeated?: boolean;
+  unique?: boolean;
 }): Promise<{
   out: string;
 }> {
+  if (repeated && unique) {
+    throw new Error("Error: Provide either 'repeated' or 'unique', not both");
+  }
+
   if (repeated) {
     return processRepeatedLines(filePath, content);
   }
