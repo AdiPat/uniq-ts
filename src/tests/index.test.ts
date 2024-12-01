@@ -1,10 +1,21 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi, afterEach, beforeEach } from "vitest";
 import { zuniq } from "../index";
 import fs from "fs";
+import { removeFile } from "./fixtures";
 
 describe("zuniq", () => {
   const testFilePath = "./test_data/test.txt";
   const countriesFilePath = "./test_data/countries.txt";
+  const outputFilePath = "./test_data/output.txt";
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(async () => {
+    vi.restoreAllMocks();
+    await removeFile(outputFilePath);
+  });
 
   it("should be defined", () => {
     expect(zuniq).toBeDefined();
@@ -59,6 +70,15 @@ describe("zuniq", () => {
     expect(out).toEqual("line1\nline2\nline3");
     expect(consoleWarnSpy).toHaveBeenCalledWith(
       "Warning: Invalid file path 'invalid_path'. Using provided content."
+    );
+  });
+
+  it("should write to provided output file if provided", async () => {
+    const outputFilePath = "./test_data/output.txt";
+    await zuniq({ filePath: testFilePath, outputFilePath });
+    const outputContent = fs.readFileSync(outputFilePath, "utf-8");
+    expect(outputContent).toEqual(
+      ["line1", "line2", "line3", "line4"].join("\n")
     );
   });
 });
