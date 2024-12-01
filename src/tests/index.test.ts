@@ -107,4 +107,26 @@ describe("zuniq", () => {
       ["2 line1", "1 line2", "3 line3", "1 line4"].join("\n")
     );
   });
+
+  it("should include a 'count' of number of times a line appears in the input for a file", async () => {
+    const { out } = await zuniq({
+      filePath: testFilePath,
+      includeCount: true,
+    });
+    expect(out).toEqual(
+      ["1 line1", "2 line2", "1 line3", "1 line4"].join("\n")
+    );
+  });
+
+  it("should include 'count' of number of times line appears in the input in the output file when specified", async () => {
+    await zuniq({
+      filePath: testFilePath,
+      outputFilePath,
+      includeCount: true,
+    });
+    const outputContent = fs.readFileSync(outputFilePath, "utf-8");
+    expect(outputContent).toEqual(
+      ["1 line1", "2 line2", "1 line3", "1 line4"].join("\n")
+    );
+  });
 });
