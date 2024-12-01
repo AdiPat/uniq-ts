@@ -129,4 +129,18 @@ describe("zuniq", () => {
       ["1 line1", "2 line2", "1 line3", "1 line4"].join("\n")
     );
   });
+
+  it("includes only repeated lines when 'repeated' is true", async () => {
+    const input = [
+        "line1",
+        "line1",
+        "line2",
+        "line3",
+        "line3",
+        "line3",
+        "line4",
+      ].join("\n"),
+      { out } = await zuniq({ content: input, repeated: true });
+    expect(out).toEqual(["line1", "line3"].join("\n"));
+  });
 });

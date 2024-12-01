@@ -5,14 +5,20 @@ export async function zuniq({
   content,
   outputFilePath,
   count,
+  repeated,
 }: {
   filePath?: string;
   content?: string;
   outputFilePath?: string;
   count?: boolean;
+  repeated?: boolean;
 }): Promise<{
   out: string;
 }> {
+  if (repeated) {
+    return processRepeatedLines(filePath, content);
+  }
+
   let result = null;
   if (filePath && content) {
     result = await processFilePathAndContent(filePath, content);
@@ -38,6 +44,19 @@ export async function zuniq({
 
   return result;
 }
+
+const processRepeatedLines = async (
+  filePath: string,
+  content: string
+): Promise<{ out: string }> => {
+  const rawContent = await getRawContent(filePath, content);
+  const lines = rawContent.split("\n");
+  const linesCount = buildLinesCount(rawContent);
+  const repeatedLines = lines.filter((line) => linesCount[line] > 1);
+  const repeatedLinesUnique = Array.from(new Set(repeatedLines));
+  const out = repeatedLinesUnique.join("\n");
+  return { out };
+};
 
 const getRawContent = async (
   filePath: string,
