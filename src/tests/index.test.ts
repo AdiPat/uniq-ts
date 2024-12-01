@@ -35,4 +35,10 @@ describe("zuniq", () => {
     );
     expect(out).toEqual(countriesResult);
   });
+
+  it("should take raw content as input and return a correct result", async () => {
+    const content = "line1\nline1\nline2\nline2\nline3\nline3";
+    const { out } = await zuniq({ content });
+    expect(out).toEqual("line1\nline2\nline3");
+  });
 });

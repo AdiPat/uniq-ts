@@ -1,8 +1,23 @@
 import fs from "fs/promises";
 
-export async function zuniq({ filePath }: { filePath: string }): Promise<{
+export async function zuniq({
+  filePath,
+  content,
+}: {
+  filePath?: string;
+  content?: string;
+}): Promise<{
   out: string;
 }> {
+  if (content) {
+    const lines = content.split("\n");
+    const uniqueLines = lines.filter((line, index) => {
+      return index === 0 || lines[index - 1] !== line;
+    });
+    const out = uniqueLines.join("\n").trim();
+    return { out };
+  }
+
   await assertFileExists(filePath);
   const fileContent = await fs.readFile(filePath, "utf-8");
   const lines = fileContent.split("\n");
