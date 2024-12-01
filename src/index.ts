@@ -26,12 +26,17 @@ export async function zuniq({
     return result;
   }
 
+  await writeToOutputFile(outputFilePath, result.out);
+
+  return result;
+}
+
+const writeToOutputFile = async (outputFilePath: string, content: string) => {
   const outputFileExists = await assertFileExists(outputFilePath)
     .then(() => true)
     .catch(() => false);
 
   if (!outputFileExists) {
-    // attempt to create
     const fileCreated = await fs
       .writeFile(outputFilePath, "")
       .then(() => true)
@@ -41,9 +46,8 @@ export async function zuniq({
     }
   }
 
-  await fs.writeFile(outputFilePath, result.out);
-  return result;
-}
+  await fs.writeFile(outputFilePath, content);
+};
 
 const processFilePathAndContent = async (
   filePath: string,
