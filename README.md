@@ -27,3 +27,7 @@ npm run build
 ```bash
 npm run test
 ```
+
+# Background
+
+I was looking for project ideas to sharpen my skills. I came across Coding Challlenges and found that its a great repository to practise your programming skills over the weekend. This was the kind of project that could be completed in a day or two, or rather few hours so I decided to attempt it. Turns out that re-implementing UNIX utilities is a great way to get better at the craft.
