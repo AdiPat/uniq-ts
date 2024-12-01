@@ -278,5 +278,11 @@ describe("zuniq", () => {
         ["line1", "line2", "line3", "line4"].join("\n") + "\n"
       );
     });
+
+    it("should not include whitespace when considering duplicates", async () => {
+      const content = "line1\n line1\nline1\nline 1\nline1\nline1";
+      const { out } = await zuniq({ content });
+      expect(out).toEqual("line1\n line1\nline1\nline 1\nline1");
+    });
   });
 });
