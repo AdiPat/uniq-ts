@@ -1,42 +1,42 @@
 import fs from "fs/promises";
-import { zUniqBaseOutput, zUniqOptions } from "./types";
+import { LineCount, zUniqBaseOutput, zUniqOptions } from "./types";
 
 const trailingNewlinesRegex = /(\n+|\r\n+)$/;
 
-export async function zuniq(args: zUniqOptions): Promise<{
+export async function zuniq(opts: zUniqOptions): Promise<{
   out: string;
 }> {
-  if (args.repeated && args.unique) {
+  if (opts.repeated && opts.unique) {
     console.warn("Warning: Provide either 'repeated' or 'unique', not both.");
     return { out: "" };
   }
 
-  if (args.repeated) {
-    return processRepeatedLines(args.filePath, args.content, args.count);
+  if (opts.repeated) {
+    return processRepeatedLines(opts.filePath, opts.content, opts.count);
   }
 
   let result = null;
-  if (args.filePath && args.content) {
-    result = await processFilePathAndContent(args.filePath, args.content);
-  } else if (args.content) {
-    result = { out: await processContent(args.content) };
+  if (opts.filePath && opts.content) {
+    result = await processFilePathAndContent(opts.filePath, opts.content);
+  } else if (opts.content) {
+    result = { out: await processContent(opts.content) };
   } else {
-    await assertFileExists(args.filePath);
-    const fileContent = await fs.readFile(args.filePath, "utf-8");
+    await assertFileExists(opts.filePath);
+    const fileContent = await fs.readFile(opts.filePath, "utf-8");
     result = { out: await processContent(fileContent) };
   }
 
-  if (args.count) {
-    let rawContent = await getRawContent(args.filePath, args.content);
+  if (opts.count) {
+    let rawContent = await getRawContent(opts.filePath, opts.content);
     const linesCount = buildLinesCount(rawContent);
     result.out = await getOutputWithCount(result.out, linesCount);
   }
 
-  if (!args.outputFilePath) {
+  if (!opts.outputFilePath) {
     return result;
   }
 
-  await writeToOutputFile(args.outputFilePath, result.out);
+  await writeToOutputFile(opts.outputFilePath, result.out);
 
   return result;
 }
@@ -83,15 +83,9 @@ const getRawContent = async (
   return rawContent;
 };
 
-const buildLinesCount = (
-  rawContent: string
-): {
-  [key: string]: number;
-} => {
+const buildLinesCount = (rawContent: string): LineCount => {
   const lines = rawContent.split("\n");
-  const linesCount: {
-    [key: string]: number;
-  } = {};
+  const linesCount: LineCount = {};
 
   lines.forEach((line) => {
     linesCount[line] = (linesCount[line] || 0) + 1;
@@ -102,7 +96,7 @@ const buildLinesCount = (
 
 const getOutputWithCount = async (
   rawContent: string,
-  linesCount: { [line: string]: number }
+  linesCount: LineCount
 ): Promise<string> => {
   const outputLines = rawContent.split("\n");
   const outputWithCount = outputLines.map((line) => {

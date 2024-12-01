@@ -10,3 +10,7 @@ export interface zUniqOptions {
 export interface zUniqBaseOutput {
   out: string;
 }
+
+export interface LineCount {
+  [line: string]: number;
+}
