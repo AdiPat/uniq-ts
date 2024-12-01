@@ -63,16 +63,18 @@ const getRawContent = async (
   content: string
 ): Promise<string> => {
   let rawContent = "";
-  if (filePath) {
-    const fileExists = await assertFileExists(filePath)
-      .then(() => true)
-      .catch(() => false);
-
-    if (fileExists) {
-      rawContent = await fs.readFile(filePath, "utf-8");
-    }
-  } else {
+  const fileExists = await assertFileExists(filePath)
+    .then(() => true)
+    .catch(() => false);
+  if (fileExists && !content) {
+    rawContent = await fs.readFile(filePath, "utf-8");
+  } else if (!fileExists && content) {
+    console.warn(
+      `Warning: Invalid file path '${filePath}'. Using provided content.`
+    );
     rawContent = content;
+  } else if (fileExists && content) {
+    throw new Error("Error: Provide either a file path or content, not both");
   }
 
   return rawContent;

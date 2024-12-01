@@ -8,6 +8,10 @@ describe("zuniq", () => {
   const countriesFilePath = "./test_data/countries.txt";
   const outputFilePath = "./test_data/output.txt";
 
+  const warningInvalidPathValidContent = `Warning: Invalid file path 'invalid_path'. Using provided content.`;
+  const errorBothFileAndContent =
+    "Error: Provide either a file path or content, not both";
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -58,9 +62,7 @@ describe("zuniq", () => {
       filePath: testFilePath,
       content: "line1\nline2\nline3",
     });
-    await expect(promise).rejects.toThrow(
-      "Error: Provide either a file path or content, not both"
-    );
+    await expect(promise).rejects.toThrow(errorBothFileAndContent);
   });
 
   it("use 'content' if file path is invalid and log a warning message", async () => {
@@ -68,9 +70,7 @@ describe("zuniq", () => {
     const content = "line1\nline2\nline3";
     const { out } = await zuniq({ filePath: "invalid_path", content });
     expect(out).toEqual("line1\nline2\nline3");
-    expect(consoleWarnSpy).toHaveBeenCalledWith(
-      "Warning: Invalid file path 'invalid_path'. Using provided content."
-    );
+    expect(consoleWarnSpy).toHaveBeenCalledWith(warningInvalidPathValidContent);
   });
 
   it("should write to provided output file if provided", async () => {
@@ -132,15 +132,45 @@ describe("zuniq", () => {
 
   it("includes only repeated lines when 'repeated' is true", async () => {
     const input = [
-        "line1",
-        "line1",
-        "line2",
-        "line3",
-        "line3",
-        "line3",
-        "line4",
-      ].join("\n"),
-      { out } = await zuniq({ content: input, repeated: true });
+      "line1",
+      "line1",
+      "line2",
+      "line3",
+      "line3",
+      "line3",
+      "line4",
+    ].join("\n");
+    const { out } = await zuniq({ content: input, repeated: true });
     expect(out).toEqual(["line1", "line3"].join("\n"));
+  });
+
+  it("should log warning message if 'filePath' is invalid and 'content' is provided and repeated is true", async () => {
+    const consoleWarnSpy = vi.spyOn(console, "warn");
+    const content = [
+      "line1",
+      "line1",
+      "line2",
+      "line3",
+      "line3",
+      "line3",
+      "line4",
+    ].join("\n");
+
+    const { out } = await zuniq({
+      filePath: "invalid_path",
+      content,
+      repeated: true,
+    });
+    expect(out).toEqual(["line1", "line3"].join("\n"));
+    expect(consoleWarnSpy).toHaveBeenCalledWith(warningInvalidPathValidContent);
+  });
+
+  it("should throw an error if both valid file path and content are provided and repeated is true", async () => {
+    const promise = zuniq({
+      filePath: testFilePath,
+      content: "line1\nline2\nline3",
+      repeated: true,
+    });
+    await expect(promise).rejects.toThrow(errorBothFileAndContent);
   });
 });
