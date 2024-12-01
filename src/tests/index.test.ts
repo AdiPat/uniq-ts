@@ -21,56 +21,60 @@ describe("zuniq", () => {
     await removeFile(outputFilePath);
   });
 
-  it("should be defined", () => {
-    expect(zuniq).toBeDefined();
-  });
-
-  it("should accept a file path and return a unique list of string where adjacent repeated strings are removed", async () => {
-    const { out } = await zuniq({ filePath: testFilePath });
-    expect(out).toEqual(["line1", "line2", "line3", "line4"].join("\n"));
-  });
-
-  it("should return empty string if file is empty", async () => {
-    const { out } = await zuniq({ filePath: "./test_data/empty.txt" });
-    expect(out).toEqual("");
-  });
-
-  it("should throw an error if file does not exist", async () => {
-    const promise = zuniq({ filePath: "./test_data/non_existent.txt" });
-    await expect(promise).rejects.toThrow(
-      "Error: Invalid file path './test_data/non_existent.txt'"
-    );
-  });
-
-  it("should return the correct output for a large file with 200+ lines", async () => {
-    const { out } = await zuniq({ filePath: countriesFilePath });
-    const countriesResult = fs.readFileSync(
-      "test_data/countries_result.txt",
-      "utf-8"
-    );
-    expect(out).toEqual(countriesResult);
-  });
-
-  it("should take raw content as input and return a correct result", async () => {
-    const content = "line1\nline1\nline2\nline2\nline3\nline3";
-    const { out } = await zuniq({ content });
-    expect(out).toEqual("line1\nline2\nline3");
-  });
-
-  it("should throw an error if both valid file path and content are provided", async () => {
-    const promise = zuniq({
-      filePath: testFilePath,
-      content: "line1\nline2\nline3",
+  describe("basic functionality should", () => {
+    it("be defined", () => {
+      expect(zuniq).toBeDefined();
     });
-    await expect(promise).rejects.toThrow(errorBothFileAndContent);
-  });
 
-  it("use 'content' if file path is invalid and log a warning message", async () => {
-    const consoleWarnSpy = vi.spyOn(console, "warn");
-    const content = "line1\nline2\nline3";
-    const { out } = await zuniq({ filePath: "invalid_path", content });
-    expect(out).toEqual("line1\nline2\nline3");
-    expect(consoleWarnSpy).toHaveBeenCalledWith(warningInvalidPathValidContent);
+    it("accept a file path and return a unique list of string where adjacent repeated strings are removed", async () => {
+      const { out } = await zuniq({ filePath: testFilePath });
+      expect(out).toEqual(["line1", "line2", "line3", "line4"].join("\n"));
+    });
+
+    it("return empty string if file is empty", async () => {
+      const { out } = await zuniq({ filePath: "./test_data/empty.txt" });
+      expect(out).toEqual("");
+    });
+
+    it("throw an error if file does not exist", async () => {
+      const promise = zuniq({ filePath: "./test_data/non_existent.txt" });
+      await expect(promise).rejects.toThrow(
+        "Error: Invalid file path './test_data/non_existent.txt'"
+      );
+    });
+
+    it("return the correct output for a large file with 200+ lines", async () => {
+      const { out } = await zuniq({ filePath: countriesFilePath });
+      const countriesResult = fs.readFileSync(
+        "test_data/countries_result.txt",
+        "utf-8"
+      );
+      expect(out).toEqual(countriesResult);
+    });
+
+    it("take raw content as input and return a correct result", async () => {
+      const content = "line1\nline1\nline2\nline2\nline3\nline3";
+      const { out } = await zuniq({ content });
+      expect(out).toEqual("line1\nline2\nline3");
+    });
+
+    it("throw an error if both valid file path and content are provided", async () => {
+      const promise = zuniq({
+        filePath: testFilePath,
+        content: "line1\nline2\nline3",
+      });
+      await expect(promise).rejects.toThrow(errorBothFileAndContent);
+    });
+
+    it("use 'content' if file path is invalid and log a warning message", async () => {
+      const consoleWarnSpy = vi.spyOn(console, "warn");
+      const content = "line1\nline2\nline3";
+      const { out } = await zuniq({ filePath: "invalid_path", content });
+      expect(out).toEqual("line1\nline2\nline3");
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        warningInvalidPathValidContent
+      );
+    });
   });
 
   describe("when 'outputFilePath' is provided", () => {
@@ -94,8 +98,8 @@ describe("zuniq", () => {
     });
   });
 
-  describe("when 'count' is true", () => {
-    it("should include a 'count' of number of times a line appears in the input", async () => {
+  describe("when 'count' is true should", () => {
+    it("include a 'count' of number of times a line appears in the input", async () => {
       const input = [
           "line1",
           "line1",
@@ -111,7 +115,7 @@ describe("zuniq", () => {
       );
     });
 
-    it("should include a 'count' of number of times a line appears in the input for a file", async () => {
+    it("include a 'count' of number of times a line appears in the input for a file", async () => {
       const { out } = await zuniq({
         filePath: testFilePath,
         count: true,
@@ -200,7 +204,7 @@ describe("zuniq", () => {
     });
   });
 
-  describe("'unique' arg", () => {
+  describe("'unique' arg should", () => {
     it("log warning message if 'repeated' is true and 'unique' is true that both used together will give empty result", async () => {
       const consoleWarnSpy = vi.spyOn(console, "warn");
       const { out } = await zuniq({
@@ -214,12 +218,12 @@ describe("zuniq", () => {
       );
     });
 
-    it("should assume 'unique' as true if 'repeated' is not provided", async () => {
+    it("assume 'unique' as true if 'repeated' is not provided", async () => {
       const { out } = await zuniq({ filePath: testFilePath, unique: true });
       expect(out).toEqual(["line1", "line2", "line3", "line4"].join("\n"));
     });
 
-    it("should assume 'unique' as true if 'repeated' is false", async () => {
+    it("assume 'unique' as true if 'repeated' is false", async () => {
       const { out } = await zuniq({
         filePath: testFilePath,
         repeated: false,
