@@ -164,9 +164,30 @@ const processFilePathAndContent = async (
 const processContent = (content: string) => {
   const lines = content.split("\n");
   const uniqueLines = lines.filter((line, index) => {
+    line = line.replace(/\r/g, "");
+
+    if (line == "") {
+      return true; // keep empty lines
+    }
     return index === 0 || lines[index - 1] !== line;
   });
-  return uniqueLines.join("\n").trim();
+
+  const outWithDuplicateNewslines = uniqueLines.join("\n");
+  let out = outWithDuplicateNewslines.replace(/\n+/g, "\n");
+
+  const trailingNewlinesRegex = /(\n+|\r\n+)$/;
+  const trailingNewlinesMatch = content.match(trailingNewlinesRegex);
+  const trailingNewlinesCount = trailingNewlinesMatch
+    ? trailingNewlinesMatch[0].length
+    : 0;
+
+  if (trailingNewlinesCount >= 1) {
+    out = out.replace(trailingNewlinesRegex, "\n");
+  } else {
+    out = out.trimEnd();
+  }
+
+  return out;
 };
 
 const assertFileExists = async (filePath: string) => {

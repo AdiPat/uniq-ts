@@ -5,6 +5,7 @@ import { removeFile } from "./fixtures";
 
 describe("zuniq", () => {
   const testFilePath = "./test_data/test.txt";
+  const testFilePathWithNewlineEnd = "./test_data/test_empty_line.txt";
   const countriesFilePath = "./test_data/countries.txt";
   const outputFilePath = "./test_data/output.txt";
   const warningInvalidPathValidContent = `Warning: Invalid file path 'invalid_path'. Using provided content.`;
@@ -225,6 +226,53 @@ describe("zuniq", () => {
         unique: true,
       });
       expect(out).toEqual(["line1", "line2", "line3", "line4"].join("\n"));
+    });
+  });
+
+  describe("input format variations", () => {
+    it("should handle mixed line endings", async () => {
+      const content = "line1\nline1\r\nline2\nline2\r\nline3\nline3\r\n";
+      const { out } = await zuniq({ content });
+      expect(out).toEqual("line1\nline2\nline3\n");
+    });
+
+    it("should handle lines with special characters", async () => {
+      const content = "line1\nline1\nline@2\nline@2\nline#3\nline#3";
+      const { out } = await zuniq({ content });
+      expect(out).toEqual("line1\nline@2\nline#3");
+    });
+
+    it("should handle very large input", async () => {
+      const largeContent = new Array(10)
+        .fill(0)
+        .map((_i, i) =>
+          new Array(100000).fill(`line${i}\nline${i}\nline${i}`).join("\n")
+        )
+        .join("\n");
+
+      const { out } = await zuniq({ content: largeContent });
+      expect(out).toEqual(
+        "line0\nline1\nline2\nline3\nline4\nline5\nline6\nline7\nline8\nline9"
+      );
+    });
+
+    it("should handle input with only repeated lines", async () => {
+      const content = "line1\nline1\nline1\nline1\nline1";
+      const { out } = await zuniq({ content });
+      expect(out).toEqual("line1");
+    });
+
+    it("should handle input with empty lines", async () => {
+      const content = "\n\nline1\n\nline2\n\nline3\n\n";
+      const { out } = await zuniq({ content });
+      expect(out).toEqual("\nline1\nline2\nline3\n");
+    });
+
+    it("should correctly return the output if there is a single newline at the end", async () => {
+      const { out } = await zuniq({ filePath: testFilePathWithNewlineEnd });
+      expect(out).toEqual(
+        ["line1", "line2", "line3", "line4"].join("\n") + "\n"
+      );
     });
   });
 });
