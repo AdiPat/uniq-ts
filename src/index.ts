@@ -1,5 +1,7 @@
 import fs from "fs/promises";
 
+const trailingNewlinesRegex = /(\n+|\r\n+)$/;
+
 export async function zuniq({
   filePath,
   content,
@@ -161,6 +163,23 @@ const processFilePathAndContent = async (
   };
 };
 
+const getTrailingNewlinesCount = (content: string): number => {
+  const trailingNewlinesMatch = content.match(trailingNewlinesRegex);
+  return trailingNewlinesMatch ? trailingNewlinesMatch[0].length : 0;
+};
+
+const updateTrailingNewlines = (
+  content: string,
+  trailingNewlinesCount: number
+): string => {
+  content = content.replace(/\n+/g, "\n");
+  if (trailingNewlinesCount >= 1) {
+    return content.replace(trailingNewlinesRegex, "\n");
+  } else {
+    return content.trimEnd();
+  }
+};
+
 const processContent = (content: string) => {
   const lines = content.split("\n");
   const uniqueLines = lines.filter((line, index) => {
@@ -173,20 +192,11 @@ const processContent = (content: string) => {
   });
 
   const outWithDuplicateNewslines = uniqueLines.join("\n");
-  let out = outWithDuplicateNewslines.replace(/\n+/g, "\n");
-
-  const trailingNewlinesRegex = /(\n+|\r\n+)$/;
-  const trailingNewlinesMatch = content.match(trailingNewlinesRegex);
-  const trailingNewlinesCount = trailingNewlinesMatch
-    ? trailingNewlinesMatch[0].length
-    : 0;
-
-  if (trailingNewlinesCount >= 1) {
-    out = out.replace(trailingNewlinesRegex, "\n");
-  } else {
-    out = out.trimEnd();
-  }
-
+  const trailingNewlinesCount = getTrailingNewlinesCount(content);
+  const out = updateTrailingNewlines(
+    outWithDuplicateNewslines,
+    trailingNewlinesCount
+  );
   return out;
 };
 
