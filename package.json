@@ -1,0 +1,25 @@
+{
+  "name": "uniq-ts",
+  "version": "1.0.0",
+  "description": "A custom implementation of the UNIX 'uniq' command line tool in TypeScript. 👾",
+  "main": "dist/index.js",
+  "bin": {
+    "zuniq": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && node dist/index.js",
+    "test": "vitest --silent --coverage",
+    "test:ui": "vitest --silent --coverage --ui"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "@vitest/coverage-v8": "^2.1.6",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.6"
+  }
+}

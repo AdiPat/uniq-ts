@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "module": "CommonJS",
+    "esModuleInterop": true,
+    "target": "ES6",
+    "noImplicitAny": true,
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "*": ["node_modules/*"]
+    },
+    "types": ["node"],
+    "typeRoots": ["node_modules/@types"],
+    "skipLibCheck": true,
+    "noEmitOnError": false
+  },
+  "include": ["src/**/*", "benchmarks/**/*"], // Include benchmark files
+  "exclude": ["node_modules", "**/*.spec.ts", "**/*.test.*"] // Exclude node_modules and test files
+}
