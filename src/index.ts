@@ -26,6 +26,21 @@ export async function zuniq({
     return result;
   }
 
+  const outputFileExists = await assertFileExists(outputFilePath)
+    .then(() => true)
+    .catch(() => false);
+
+  if (!outputFileExists) {
+    // attempt to create
+    const fileCreated = await fs
+      .writeFile(outputFilePath, "")
+      .then(() => true)
+      .catch((err) => null);
+    if (!fileCreated) {
+      throw new Error(`Error: Invalid file path '${outputFilePath}'`);
+    }
+  }
+
   await fs.writeFile(outputFilePath, result.out);
   return result;
 }

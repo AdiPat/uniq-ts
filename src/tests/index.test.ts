@@ -81,4 +81,14 @@ describe("zuniq", () => {
       ["line1", "line2", "line3", "line4"].join("\n")
     );
   });
+
+  it("should throw an error if writing to the output file failed", async () => {
+    const promise = zuniq({
+      filePath: testFilePath,
+      outputFilePath: "/invalid_path/output.txt",
+    });
+    await expect(promise).rejects.toThrow(
+      "Error: Invalid file path '/invalid_path/output.txt'"
+    );
+  });
 });
