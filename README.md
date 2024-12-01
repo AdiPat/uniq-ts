@@ -48,7 +48,7 @@ npm run test
 
 ---
 
-## ❤️ Shoutout
+## 🙌🏽 Shoutout
 
 Special thanks to [John Crickett's Coding Challenges](https://codingchallenges.fyi/) for the inspiration behind this tool. 👏
 
