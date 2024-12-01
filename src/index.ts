@@ -1,55 +1,42 @@
 import fs from "fs/promises";
+import { zUniqBaseOutput, zUniqOptions } from "./types";
 
 const trailingNewlinesRegex = /(\n+|\r\n+)$/;
 
-export async function zuniq({
-  filePath,
-  content,
-  outputFilePath,
-  count,
-  repeated,
-  unique,
-}: {
-  filePath?: string;
-  content?: string;
-  outputFilePath?: string;
-  count?: boolean;
-  repeated?: boolean;
-  unique?: boolean;
-}): Promise<{
+export async function zuniq(args: zUniqOptions): Promise<{
   out: string;
 }> {
-  if (repeated && unique) {
+  if (args.repeated && args.unique) {
     console.warn("Warning: Provide either 'repeated' or 'unique', not both.");
     return { out: "" };
   }
 
-  if (repeated) {
-    return processRepeatedLines(filePath, content, count);
+  if (args.repeated) {
+    return processRepeatedLines(args.filePath, args.content, args.count);
   }
 
   let result = null;
-  if (filePath && content) {
-    result = await processFilePathAndContent(filePath, content);
-  } else if (content) {
-    result = { out: await processContent(content) };
+  if (args.filePath && args.content) {
+    result = await processFilePathAndContent(args.filePath, args.content);
+  } else if (args.content) {
+    result = { out: await processContent(args.content) };
   } else {
-    await assertFileExists(filePath);
-    const fileContent = await fs.readFile(filePath, "utf-8");
+    await assertFileExists(args.filePath);
+    const fileContent = await fs.readFile(args.filePath, "utf-8");
     result = { out: await processContent(fileContent) };
   }
 
-  if (count) {
-    let rawContent = await getRawContent(filePath, content);
+  if (args.count) {
+    let rawContent = await getRawContent(args.filePath, args.content);
     const linesCount = buildLinesCount(rawContent);
     result.out = await getOutputWithCount(result.out, linesCount);
   }
 
-  if (!outputFilePath) {
+  if (!args.outputFilePath) {
     return result;
   }
 
-  await writeToOutputFile(outputFilePath, result.out);
+  await writeToOutputFile(args.outputFilePath, result.out);
 
   return result;
 }
@@ -58,7 +45,7 @@ const processRepeatedLines = async (
   filePath: string,
   content: string,
   count: boolean
-): Promise<{ out: string }> => {
+): Promise<zUniqBaseOutput> => {
   const rawContent = await getRawContent(filePath, content);
   const lines = rawContent.split("\n");
   const linesCount = buildLinesCount(rawContent);
@@ -125,7 +112,10 @@ const getOutputWithCount = async (
   return outputWithCount.join("\n");
 };
 
-const writeToOutputFile = async (outputFilePath: string, content: string) => {
+const writeToOutputFile = async (
+  outputFilePath: string,
+  content: string
+): Promise<void> => {
   const outputFileExists = await assertFileExists(outputFilePath)
     .then(() => true)
     .catch(() => false);
@@ -146,7 +136,7 @@ const writeToOutputFile = async (outputFilePath: string, content: string) => {
 const processFilePathAndContent = async (
   filePath: string,
   content: string
-): Promise<{ out: string }> => {
+): Promise<zUniqBaseOutput> => {
   const fileExists = await assertFileExists(filePath)
     .then(() => true)
     .catch(() => false);
@@ -180,7 +170,7 @@ const updateTrailingNewlines = (
   }
 };
 
-const processContent = (content: string) => {
+const processContent = (content: string): string => {
   const lines = content.split("\n");
   const uniqueLines = lines.filter((line, index) => {
     line = line.replace(/\r/g, "");
@@ -200,7 +190,7 @@ const processContent = (content: string) => {
   return out;
 };
 
-const assertFileExists = async (filePath: string) => {
+const assertFileExists = async (filePath: string): Promise<void> => {
   try {
     await fs.access(filePath);
   } catch (error) {
