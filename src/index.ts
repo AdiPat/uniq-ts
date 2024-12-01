@@ -3,6 +3,7 @@ import fs from "fs/promises";
 export async function zuniq({
   filePath,
   content,
+  outputFilePath,
 }: {
   filePath?: string;
   content?: string;
@@ -20,6 +21,12 @@ export async function zuniq({
     const fileContent = await fs.readFile(filePath, "utf-8");
     result = { out: await processContent(fileContent) };
   }
+
+  if (!outputFilePath) {
+    return result;
+  }
+
+  await fs.writeFile(outputFilePath, result.out);
   return result;
 }
 
