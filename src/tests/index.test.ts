@@ -180,17 +180,37 @@ describe("zuniq", () => {
       });
       await expect(promise).rejects.toThrow(errorBothFileAndContent);
     });
+
+    it("'count' should return the correct number of repeated values", async () => {
+      const input = [
+        "line1",
+        "line1",
+        "line2",
+        "line3",
+        "line3",
+        "line3",
+        "line4",
+      ].join("\n");
+      const { out } = await zuniq({
+        content: input,
+        repeated: true,
+        count: true,
+      });
+      expect(out).toEqual(["2 line1", "3 line3"].join("\n"));
+    });
   });
 
   describe("when 'unique' is true", () => {
-    it("throw an error if 'repeated' is true and file path is provided", async () => {
-      const promise = zuniq({
+    it("log warning message if 'repeated' is true that both used together will give empty result", async () => {
+      const consoleWarnSpy = vi.spyOn(console, "warn");
+      const { out } = await zuniq({
         filePath: testFilePath,
         unique: true,
         repeated: true,
       });
-      await expect(promise).rejects.toThrow(
-        "Error: Provide either 'repeated' or 'unique', not both"
+      expect(out).toEqual("");
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        "Warning: Provide either 'repeated' or 'unique', not both."
       );
     });
   });

@@ -18,11 +18,12 @@ export async function zuniq({
   out: string;
 }> {
   if (repeated && unique) {
-    throw new Error("Error: Provide either 'repeated' or 'unique', not both");
+    console.warn("Warning: Provide either 'repeated' or 'unique', not both.");
+    return { out: "" };
   }
 
   if (repeated) {
-    return processRepeatedLines(filePath, content);
+    return processRepeatedLines(filePath, content, count);
   }
 
   let result = null;
@@ -53,14 +54,21 @@ export async function zuniq({
 
 const processRepeatedLines = async (
   filePath: string,
-  content: string
+  content: string,
+  count: boolean
 ): Promise<{ out: string }> => {
   const rawContent = await getRawContent(filePath, content);
   const lines = rawContent.split("\n");
   const linesCount = buildLinesCount(rawContent);
   const repeatedLines = lines.filter((line) => linesCount[line] > 1);
-  const repeatedLinesUnique = Array.from(new Set(repeatedLines));
-  const out = repeatedLinesUnique.join("\n");
+  const out = Array.from(new Set(repeatedLines)).join("\n");
+
+  if (count) {
+    return {
+      out: await getOutputWithCount(out, linesCount),
+    };
+  }
+
   return { out };
 };
 
