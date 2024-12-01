@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { zuniq } from "../index";
+import fs from "fs";
 
 describe("zuniq", () => {
   const testFilePath = "./test_data/test.txt";
+  const countriesFilePath = "./test_data/countries.txt";
 
   it("should be defined", () => {
     expect(zuniq).toBeDefined();
@@ -23,5 +25,14 @@ describe("zuniq", () => {
     await expect(promise).rejects.toThrow(
       "Error: Invalid file path './test_data/non_existent.txt'"
     );
+  });
+
+  it("should return the correct output for a large file with 200+ lines", async () => {
+    const { out } = await zuniq({ filePath: countriesFilePath });
+    const countriesResult = fs.readFileSync(
+      "test_data/countries_result.txt",
+      "utf-8"
+    );
+    expect(out).toEqual(countriesResult);
   });
 });

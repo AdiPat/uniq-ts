@@ -29,7 +29,6 @@ Bolivia
 Bosnia and Herzegovina
 Botswana
 Brazil
-Brazil
 British Virgin Islands
 Brunei
 Bulgaria
@@ -104,7 +103,6 @@ Iraq
 Ireland
 Isle of Man
 Israel
-Italy
 Italy
 Jamaica
 Japan
@@ -225,7 +223,6 @@ Transnistria
 Trinidad and Tobago
 Tristan da Cunha
 Tunisia
-Turkey
 Turkey
 Turkmenistan
 Turks and Caicos Islands
