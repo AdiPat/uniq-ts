@@ -7,3 +7,10 @@ export const removeFile = (filePath: string) => {
     }
   } catch (error) {}
 };
+
+export const setProcessArgV = (argv: string[]) => {
+  Object.defineProperty(process, "argv", {
+    get: () => argv,
+    set: () => {},
+  });
+};
