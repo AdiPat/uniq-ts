@@ -6,21 +6,21 @@ export async function zuniq({
 }: {
   filePath?: string;
   content?: string;
+  outputFilePath?: string;
 }): Promise<{
   out: string;
 }> {
-  if (filePath && content) return processFilePathAndContent(filePath, content);
-
-  if (content) {
-    return {
-      out: processContent(content),
-    };
+  let result = null;
+  if (filePath && content) {
+    result = await processFilePathAndContent(filePath, content);
+  } else if (content) {
+    result = { out: await processContent(content) };
+  } else {
+    await assertFileExists(filePath);
+    const fileContent = await fs.readFile(filePath, "utf-8");
+    result = { out: await processContent(fileContent) };
   }
-
-  await assertFileExists(filePath);
-  const fileContent = await fs.readFile(filePath, "utf-8");
-  const out = processContent(fileContent);
-  return { out };
+  return result;
 }
 
 const processFilePathAndContent = async (
