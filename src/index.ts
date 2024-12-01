@@ -4,10 +4,12 @@ export async function zuniq({
   filePath,
   content,
   outputFilePath,
+  includeCount,
 }: {
   filePath?: string;
   content?: string;
   outputFilePath?: string;
+  includeCount?: boolean;
 }): Promise<{
   out: string;
 }> {
@@ -22,6 +24,12 @@ export async function zuniq({
     result = { out: await processContent(fileContent) };
   }
 
+  if (includeCount) {
+    let rawContent = await getRawContent(filePath, content);
+    const linesCount = buildLinesCount(rawContent);
+    result.out = await getOutputWithCount(result.out, linesCount);
+  }
+
   if (!outputFilePath) {
     return result;
   }
@@ -30,6 +38,55 @@ export async function zuniq({
 
   return result;
 }
+
+const getRawContent = async (
+  filePath: string,
+  content: string
+): Promise<string> => {
+  let rawContent = "";
+  if (filePath) {
+    const fileExists = await assertFileExists(filePath)
+      .then(() => true)
+      .catch(() => false);
+
+    if (fileExists) {
+      rawContent = await fs.readFile(filePath, "utf-8");
+    }
+  } else {
+    rawContent = content;
+  }
+
+  return rawContent;
+};
+
+const buildLinesCount = (
+  rawContent: string
+): {
+  [key: string]: number;
+} => {
+  const lines = rawContent.split("\n");
+  const linesCount: {
+    [key: string]: number;
+  } = {};
+
+  lines.forEach((line) => {
+    linesCount[line] = (linesCount[line] || 0) + 1;
+  });
+
+  return linesCount;
+};
+
+const getOutputWithCount = async (
+  rawContent: string,
+  linesCount: { [line: string]: number }
+): Promise<string> => {
+  const outputLines = rawContent.split("\n");
+  const outputWithCount = outputLines.map((line) => {
+    const count = linesCount[line];
+    return `${count} ${line}`;
+  });
+  return outputWithCount.join("\n");
+};
 
 const writeToOutputFile = async (outputFilePath: string, content: string) => {
   const outputFileExists = await assertFileExists(outputFilePath)
@@ -40,7 +97,7 @@ const writeToOutputFile = async (outputFilePath: string, content: string) => {
     const fileCreated = await fs
       .writeFile(outputFilePath, "")
       .then(() => true)
-      .catch((err) => null);
+      .catch(() => null);
     if (!fileCreated) {
       throw new Error(`Error: Invalid file path '${outputFilePath}'`);
     }

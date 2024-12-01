@@ -91,4 +91,20 @@ describe("zuniq", () => {
       "Error: Invalid file path '/invalid_path/output.txt'"
     );
   });
+
+  it("should include a 'count' of number of times a line appears in the input", async () => {
+    const input = [
+        "line1",
+        "line1",
+        "line2",
+        "line3",
+        "line3",
+        "line3",
+        "line4",
+      ].join("\n"),
+      { out } = await zuniq({ content: input, includeCount: true });
+    expect(out).toEqual(
+      ["2 line1", "1 line2", "3 line3", "1 line4"].join("\n")
+    );
+  });
 });
