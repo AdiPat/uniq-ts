@@ -4,12 +4,12 @@ export async function zuniq({
   filePath,
   content,
   outputFilePath,
-  includeCount,
+  count,
 }: {
   filePath?: string;
   content?: string;
   outputFilePath?: string;
-  includeCount?: boolean;
+  count?: boolean;
 }): Promise<{
   out: string;
 }> {
@@ -24,7 +24,7 @@ export async function zuniq({
     result = { out: await processContent(fileContent) };
   }
 
-  if (includeCount) {
+  if (count) {
     let rawContent = await getRawContent(filePath, content);
     const linesCount = buildLinesCount(rawContent);
     result.out = await getOutputWithCount(result.out, linesCount);
@@ -97,7 +97,7 @@ const writeToOutputFile = async (outputFilePath: string, content: string) => {
     const fileCreated = await fs
       .writeFile(outputFilePath, "")
       .then(() => true)
-      .catch(() => null);
+      .catch((): any => null);
     if (!fileCreated) {
       throw new Error(`Error: Invalid file path '${outputFilePath}'`);
     }
