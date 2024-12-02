@@ -1,7 +1,7 @@
 import { describe, expect, it, vi, afterEach, beforeEach } from "vitest";
 import { Cli } from "../cli";
 import { filePaths, setProcessArgV } from "./fixtures";
-import * as Zuniq from "../index";
+import * as Zuniq from "../zuniq";
 
 describe("cli", () => {
   beforeEach(() => {

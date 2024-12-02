@@ -1,6 +1,6 @@
 import { Command } from "commander";
 import { CliOptions, zUniqOptions } from "./types";
-import { zuniq } from "./index";
+import { zuniq } from "./zuniq";
 
 class Cli {
   program: Command;
@@ -62,4 +62,6 @@ class Cli {
   };
 }
 
-export { Cli };
+const appCli = new Cli();
+
+export { Cli, appCli };
