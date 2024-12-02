@@ -79,12 +79,13 @@ describe("zuniq", () => {
 
   describe("when 'outputFilePath' is provided", () => {
     it("write to provided output file if provided", async () => {
-      const outputFilePath = "./test_data/output.txt";
+      const outputFilePath = "./test_data/output-2.txt";
       await zuniq({ filePath: testFilePath, outputFilePath });
       const outputContent = fs.readFileSync(outputFilePath, "utf-8");
       expect(outputContent).toEqual(
         ["line1", "line2", "line3", "line4"].join("\n")
       );
+      await removeFile(outputFilePath);
     });
 
     it("throw an error if writing to the output file failed", async () => {
