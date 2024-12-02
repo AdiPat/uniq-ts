@@ -25,7 +25,8 @@ class Cli {
   private buildOptions = (): CliOptions => {
     this.program.parse(process.argv);
     const options = this.program.opts();
-    return this.sanitizeOptions(options);
+    const filePath = this.program.args[0];
+    return this.sanitizeOptions({ ...options, filePath });
   };
 
   private sanitizeOptions = (options: CliOptions): CliOptions => {

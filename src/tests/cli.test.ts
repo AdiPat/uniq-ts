@@ -105,10 +105,33 @@ describe("cli", () => {
       const cli = new Cli();
       const options = cli.getOptions();
       expect(options).toEqual({
+        filePath: "test.txt",
         count: true,
         outputPath: undefined,
         repeated: false,
         unique: false,
+      });
+    });
+
+    it("parses all the arguments correctly", async () => {
+      setProcessArgV([
+        "node",
+        "zuniq",
+        "test.txt",
+        "-c",
+        "-o",
+        "output.txt",
+        "-d",
+        "-u",
+      ]);
+      const cli = new Cli();
+      const options = cli.getOptions();
+      expect(options).toEqual({
+        filePath: "test.txt",
+        count: true,
+        outputPath: "output.txt",
+        repeated: true,
+        unique: true,
       });
     });
   });
