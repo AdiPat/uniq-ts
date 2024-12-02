@@ -48,11 +48,14 @@ describe("cli", () => {
       expect(versionSpy).toBeCalledWith("1.0.0");
     });
 
-    it("calls the argument method to set the 'filePath'", async () => {
+    it("calls the option method to set the 'filePath'", async () => {
       const cli = new Cli();
-      const argumentSpy = vi.spyOn(cli.program, "argument");
+      const optionSpy = vi.spyOn(cli.program, "option");
       cli.getOptions();
-      expect(argumentSpy).toBeCalledWith("<filePath>", "Path to the file.");
+      expect(optionSpy.mock.calls[4]).toEqual([
+        "-f, --filePath",
+        "Path to the file.",
+      ]);
     });
 
     it("calls the option method to set the 'outputPath'", async () => {
@@ -134,5 +137,21 @@ describe("cli", () => {
         unique: true,
       });
     });
+
+    it.each(["-c", "--count", "-d", "--repeated", "-u", "--unique"])(
+      `should not consider this arg (%s) as filePath`,
+      (flag) => {
+        setProcessArgV(["node", "zuniq", flag]);
+        const cli = new Cli();
+        const options = cli.getOptions();
+        expect(options).toEqual({
+          filePath: undefined,
+          count: flag === "-c" || flag === "--count",
+          outputPath: undefined,
+          repeated: flag === "-d" || flag === "--repeated",
+          unique: flag === "-u" || flag === "--unique",
+        });
+      }
+    );
   });
 });

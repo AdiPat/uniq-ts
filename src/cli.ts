@@ -11,7 +11,6 @@ class Cli {
   getOptions = (): CliOptions => {
     this.setMetaData();
     this.setOptions();
-    this.setArguments();
     return this.buildOptions();
   };
 
@@ -44,11 +43,8 @@ class Cli {
       .option("-u, --unique", "Print only unique lines.")
       .option("-o, --outputPath <outputPath>", "Path to the output file.")
       .option("-c, --count", "Print count of occurrences of each line.")
-      .option("-d, --repeated", "Print only repeated lines.");
-  };
-
-  private setArguments = (): void => {
-    this.program.argument("<filePath>", "Path to the file.");
+      .option("-d, --repeated", "Print only repeated lines.")
+      .option("-f, --filePath", "Path to the file.");
   };
 }
 
