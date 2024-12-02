@@ -7,6 +7,14 @@ export interface zUniqOptions {
   unique?: boolean;
 }
 
+export interface CliOptions {
+  filePath?: string;
+  outputPath?: string;
+  count?: boolean;
+  repeated?: boolean;
+  unique?: boolean;
+}
+
 export interface zUniqBaseOutput {
   out: string;
 }

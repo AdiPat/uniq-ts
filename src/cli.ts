@@ -1,4 +1,5 @@
 import { Command } from "commander";
+import { CliOptions } from "./types";
 
 class Cli {
   program: Command;
@@ -7,12 +8,11 @@ class Cli {
     this.program = new Command();
   }
 
-  getOptions = (): { [option: string]: any } => {
+  getOptions = (): CliOptions => {
     this.setMetaData();
     this.setOptions();
     this.setArguments();
-    const options = this.buildOptions();
-    return options;
+    return this.buildOptions();
   };
 
   private setMetaData = (): void => {
@@ -22,21 +22,19 @@ class Cli {
       .version("1.0.0");
   };
 
-  private buildOptions = (): { [option: string]: any } => {
+  private buildOptions = (): CliOptions => {
     this.program.parse(process.argv);
     const options = this.program.opts();
-    let { filePath, outputPath, count, repeated, unique } = options;
-    filePath = Boolean(filePath) ? filePath : undefined;
-    outputPath = Boolean(outputPath) ? outputPath : undefined;
-    count = Boolean(count);
-    repeated = Boolean(repeated);
-    unique = Boolean(unique);
+    return this.sanitizeOptions(options);
+  };
+
+  private sanitizeOptions = (options: CliOptions): CliOptions => {
     return {
-      filePath,
-      outputPath,
-      count,
-      repeated,
-      unique,
+      filePath: Boolean(options.filePath) ? options.filePath : undefined,
+      outputPath: Boolean(options.outputPath) ? options.outputPath : undefined,
+      count: Boolean(options.count),
+      repeated: Boolean(options.repeated),
+      unique: Boolean(options.unique),
     };
   };
 
@@ -46,7 +44,6 @@ class Cli {
       .option("-o, --outputPath <outputPath>", "Path to the output file.")
       .option("-c, --count", "Print count of occurrences of each line.")
       .option("-d, --repeated", "Print only repeated lines.");
-    //this.program.argument("<filePath>", "Path to the file.");
   };
 
   private setArguments = (): void => {
