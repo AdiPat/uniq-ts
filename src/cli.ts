@@ -1,7 +1,6 @@
 import { Command } from "commander";
 import { CliOptions, zUniqOptions } from "./types";
 import { zuniq } from "./zuniq";
-import readline from "readline";
 import { io } from "./io";
 
 class Cli {
