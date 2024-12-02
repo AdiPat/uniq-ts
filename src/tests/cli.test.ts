@@ -2,6 +2,8 @@ import { describe, expect, it, vi, afterEach, beforeEach } from "vitest";
 import { Cli } from "../cli";
 import { filePaths, setProcessArgV } from "./fixtures";
 import * as Zuniq from "../zuniq";
+import { Readable } from "stream";
+import { io } from "../io";
 
 describe("cli", () => {
   beforeEach(() => {
@@ -192,6 +194,62 @@ describe("cli", () => {
       const consoleLogSpy = vi.spyOn(console, "log");
       await cli.run();
       expect(consoleLogSpy).toBeCalledWith("output");
+    });
+
+    it("read the input from stdin if filePath is not provided", async () => {
+      setProcessArgV(["node", "zuniq"]);
+      const cli = new Cli();
+      const readFromStdinSpy = vi.spyOn(cli, "readFromStdin");
+      readFromStdinSpy.mockResolvedValue("line1\nline2\nline3");
+      const zuniqSpy = vi.spyOn(Zuniq, "zuniq");
+      await cli.run();
+      expect(readFromStdinSpy).toBeCalled();
+      expect(zuniqSpy).toBeCalledWith({
+        filePath: undefined,
+        content: "line1\nline2\nline3",
+        count: false,
+        outputPath: undefined,
+        repeated: false,
+        unique: false,
+      });
+    });
+  });
+
+  describe("readFromStdin should", () => {
+    it("be defined", () => {
+      const cli = new Cli();
+      expect(cli.readFromStdin).toBeDefined();
+    });
+
+    it("creates a readline interface", async () => {
+      const createInterfaceSpy = vi.spyOn(io, "createInterface");
+      const questionSpy = vi.fn();
+      questionSpy.mockImplementation((question, cb) => {
+        cb("input from stdin");
+      });
+      createInterfaceSpy.mockReturnValue({
+        question: questionSpy,
+        close: () => {},
+      } as any);
+      const cli = new Cli();
+      await cli.readFromStdin();
+      expect(createInterfaceSpy).toBeCalled();
+    });
+
+    it("returns the input from stdin", async () => {
+      const createInterfaceSpy = vi.spyOn(io, "createInterface");
+      const questionSpy = vi.fn();
+      questionSpy.mockImplementation((question, cb) => {
+        cb("input from stdin");
+      });
+      createInterfaceSpy.mockReturnValue({
+        question: questionSpy,
+        close: () => {},
+      } as any);
+      const cli = new Cli();
+
+      const input = await cli.readFromStdin();
+      expect(input).toEqual("input from stdin");
     });
   });
 });

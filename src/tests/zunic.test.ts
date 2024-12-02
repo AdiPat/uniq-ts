@@ -21,18 +21,6 @@ describe("zuniq", () => {
     await removeFile(outputFilePath);
   });
 
-  // describe("startZuniq should", () => {
-  //   it("be defined", () => {
-  //     expect(startZuniq).toBeDefined();
-  //   });
-
-  //   it("should ", async () => {
-  //     const constructorSpy = vi.spyOn(Cli.appCli
-  //     await startZuniq();
-  //     expect(constructorSpy).toHaveBeenCalled();
-  //   });
-  // });
-
   describe("basic functionality should", () => {
     it("be defined", () => {
       expect(zuniq).toBeDefined();

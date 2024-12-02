@@ -1,6 +1,8 @@
 import { Command } from "commander";
 import { CliOptions, zUniqOptions } from "./types";
 import { zuniq } from "./zuniq";
+import readline from "readline";
+import { io } from "./io";
 
 class Cli {
   program: Command;
@@ -11,7 +13,13 @@ class Cli {
 
   async run(): Promise<void> {
     const options: CliOptions = this.getOptions();
+    let content = "";
+    if (!options.filePath) {
+      content = await this.readFromStdin();
+    }
+
     const zUniqOptions: zUniqOptions = {
+      ...(content && { content }),
       filePath: options.filePath,
       outputFilePath: options.outputPath,
       count: options.count,
@@ -20,6 +28,21 @@ class Cli {
     };
     const { out } = await zuniq(zUniqOptions);
     console.log(out);
+  }
+
+  async readFromStdin(): Promise<string> {
+    const rl = io.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+    const input = await new Promise<string>((resolve) => {
+      rl.question("Enter input: ", (answer) => {
+        resolve(answer);
+        rl.close();
+      });
+    });
+
+    return input;
   }
 
   getOptions = (): CliOptions => {
