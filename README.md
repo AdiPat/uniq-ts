@@ -2,9 +2,13 @@
 
 ## `uniq` Implementation in TypeScript 👾
 
-A powerful, TypeScript-based reimplementation of the UNIX `uniq` command-line tool. 🚀
+A powerful, TypeScript-based reimplementation of the UNIX `uniq` command-line tool.
 
-Inspired by [John Crickett's Coding Challenges](https://codingchallenges.fyi/challenges/challenge-uniq/), this project is a perfect weekend hackathon for sharpening your TypeScript chops. 🧠💻
+<p align="center">
+  <img src="https://raw.githubusercontent.com/AdiPat/zuniq/refs/heads/main/assets/zuniq_art.png" />
+</p>
+
+Inspired by [John Crickett's Coding Challenges](https://codingchallenges.fyi/challenges/challenge-uniq/), this project is a perfect weekend hackathon for sharpening your TypeScript powers. 🧠💻
 
 ---
 
