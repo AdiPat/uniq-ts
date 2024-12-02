@@ -46,6 +46,15 @@ Run the tests to ensure everything is functioning perfectly:
 npm run test
 ```
 
+## 3️⃣ Run 'zuniq'
+
+Build and run the package.
+
+```bash
+npm run build
+node dist/index.js test_data/test.txt -c
+```
+
 ---
 
 ## 🙌🏽 Shoutout

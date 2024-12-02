@@ -1,0 +1,247 @@
+   1 Abkhazia
+   1 Afghanistan
+   1 Akrotiri and Dhekelia
+   1 Albania
+   1 Algeria
+   1 American Samoa
+   1 Andorra
+   1 Angola
+   1 Anguilla
+   1 Antigua and Barbuda
+   1 Argentina
+   1 Armenia
+   1 Aruba
+   1 Ascension Island
+   1 Australia
+   1 Austria
+   1 Azerbaijan
+   1 Bahamas
+   1 Bahrain
+   1 Bangladesh
+   1 Barbados
+   1 Belarus
+   1 Belgium
+   1 Belize
+   1 Benin
+   1 Bermuda
+   1 Bhutan
+   1 Bolivia
+   1 Bosnia and Herzegovina
+   1 Botswana
+   2 Brazil
+   1 British Virgin Islands
+   1 Brunei
+   1 Bulgaria
+   1 Burkina Faso
+   1 Burundi
+   1 Cambodia
+   1 Cameroon
+   1 Canada
+   1 Cape Verde
+   1 Cayman Islands
+   1 Central African Republic
+   1 Chad
+   1 Chile
+   1 China
+   1 Christmas Island
+   1 Cocos (Keeling) Islands
+   1 Colombia
+   1 Comoros
+   1 Cook Islands
+   1 Costa Rica
+   1 Croatia
+   1 Cuba
+   1 Curaçao
+   1 Cyprus
+   1 Czech Republic
+   1 Côte d'Ivoire
+   1 Democratic Republic of the Congo
+   1 Denmark
+   1 Djibouti
+   1 Dominica
+   1 Dominican Republic
+   1 East Timor (Timor-Leste)
+   1 Easter Island
+   1 Ecuador
+   1 Egypt
+   1 El Salvador
+   1 Equatorial Guinea
+   1 Eritrea
+   1 Estonia
+   1 Ethiopia
+   1 Falkland Islands
+   1 Faroe Islands
+   1 Federated States of Micronesia
+   1 Fiji
+   1 Finland
+   1 France
+   1 French Guiana
+   1 French Polynesia
+   1 Gabon
+   1 Gambia
+   1 Georgia
+   1 Germany
+   1 Ghana
+   1 Gibraltar
+   1 Greece
+   1 Greenland
+   1 Grenada
+   1 Guam
+   1 Guatemala
+   1 Guernsey
+   1 Guinea
+   1 Guinea-Bissau
+   1 Guyana
+   1 Haiti
+   1 Honduras
+   1 Hungary
+   1 Iceland
+   1 India
+   1 Indonesia
+   1 Iran
+   1 Iraq
+   1 Ireland
+   1 Isle of Man
+   1 Israel
+   2 Italy
+   1 Jamaica
+   1 Japan
+   1 Jersey
+   1 Jordan
+   1 Kazakhstan
+   1 Kenya
+   1 Kiribati
+   1 Kosovo
+   1 Kuwait
+   1 Kyrgyzstan
+   1 Laos
+   1 Latvia
+   1 Lebanon
+   1 Lesotho
+   1 Liberia
+   1 Libya
+   1 Liechtenstein
+   1 Lithuania
+   1 Luxembourg
+   1 Macedonia
+   1 Madagascar
+   1 Malawi
+   1 Malaysia
+   1 Maldives
+   1 Mali
+   1 Malta
+   1 Marshall Islands
+   1 Mauritania
+   1 Mauritius
+   1 Mexico
+   1 Moldova
+   1 Monaco
+   1 Mongolia
+   1 Montenegro
+   1 Montserrat
+   1 Morocco
+   1 Mozambique
+   1 Myanmar
+   1 Nagorno-Karabakh Republic
+   1 Namibia
+   1 Nauru
+   1 Nepal
+   1 Netherlands
+   1 New Caledonia
+   1 New Zealand
+   1 Nicaragua
+   1 Niger
+   1 Nigeria
+   1 Niue
+   1 Norfolk Island
+   1 North Korea
+   1 Northern Cyprus
+   1 United Kingdom Northern Ireland
+   1 Northern Mariana Islands
+   1 Norway
+   1 Oman
+   1 Pakistan
+   1 Palau
+   1 Palestine
+   1 Panama
+   1 Papua New Guinea
+   1 Paraguay
+   1 Peru
+   1 Philippines
+   1 Pitcairn Islands
+   1 Poland
+   1 Portugal
+   1 Puerto Rico
+   1 Qatar
+   1 Republic of China (Taiwan)
+   1 Republic of the Congo
+   1 Romania
+   1 Russia
+   1 Rwanda
+   1 Saint Barthélemy
+   1 Saint Helena
+   1 Saint Kitts and Nevis
+   1 Saint Lucia
+   1 Saint Martin
+   1 Saint Pierre and Miquelon
+   1 Saint Vincent and the Grenadines
+   1 Samoa
+   1 San Marino
+   1 Saudi Arabia
+   1 Scotland
+   1 Senegal
+   1 Serbia
+   1 Seychelles
+   1 Sierra Leone
+   1 Singapore
+   1 Sint Maarten
+   1 Slovakia
+   1 Slovenia
+   1 Solomon Islands
+   1 Somalia
+   1 Somaliland
+   1 South Africa
+   1 South Georgia and the South Sandwich Islands
+   1 South Korea
+   1 South Ossetia
+   1 South Sudan
+   1 Spain
+   1 Sri Lanka
+   1 Sudan
+   1 Suriname
+   1 Swaziland
+   1 Sweden
+   1 Switzerland
+   1 Syria
+   1 São Tomé and Príncipe
+   1 Tajikistan
+   1 Tanzania
+   1 Thailand
+   1 Togo
+   1 Tonga
+   1 Transnistria
+   1 Trinidad and Tobago
+   1 Tristan da Cunha
+   1 Tunisia
+   2 Turkey
+   1 Turkmenistan
+   1 Turks and Caicos Islands
+   1 Tuvalu
+   1 Uganda
+   1 Ukraine
+   1 United Arab Emirates
+   1 United Kingdom
+   1 United States of American
+   1 United States Virgin Islands
+   1 Uruguay
+   1 Uzbekistan
+   1 Vanuatu
+   1 Vatican City
+   1 Venezuela
+   1 Vietnam
+   1 Wales
+   1 Wallis and Futuna
+   1 Western Sahara
+   1 Yemen
+   1 Zambia
+   1 Zimbabwe
