@@ -1,11 +1,25 @@
 import { Command } from "commander";
-import { CliOptions } from "./types";
+import { CliOptions, zUniqOptions } from "./types";
+import { zuniq } from "./index";
 
 class Cli {
   program: Command;
 
   constructor() {
     this.program = new Command();
+  }
+
+  async run(): Promise<void> {
+    const options: CliOptions = this.getOptions();
+    const zUniqOptions: zUniqOptions = {
+      filePath: options.filePath,
+      outputFilePath: options.outputPath,
+      count: options.count,
+      repeated: options.repeated,
+      unique: options.unique,
+    };
+    const { out } = await zuniq(zUniqOptions);
+    console.log(out);
   }
 
   getOptions = (): CliOptions => {

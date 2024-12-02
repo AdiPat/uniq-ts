@@ -1,10 +1,11 @@
 import { describe, expect, it, vi, afterEach, beforeEach } from "vitest";
 import { Cli } from "../cli";
-import { setProcessArgV } from "./fixtures";
+import { filePaths, setProcessArgV } from "./fixtures";
+import * as Zuniq from "../index";
 
 describe("cli", () => {
   beforeEach(() => {
-    setProcessArgV(["node", "zuniq", "test.txt"]);
+    setProcessArgV(["node", "zuniq", filePaths.testFilePath]);
     vi.clearAllMocks();
   });
 
@@ -89,7 +90,7 @@ describe("cli", () => {
     });
 
     it("calls the parse method with process.argv", async () => {
-      setProcessArgV(["node", "zuniq", "test.txt", "-c"]);
+      setProcessArgV(["node", "zuniq", filePaths.testFilePath, "-c"]);
       const cli = new Cli();
       const parseSpy = vi.spyOn(cli.program, "parse");
       cli.getOptions();
@@ -104,11 +105,11 @@ describe("cli", () => {
     });
 
     it("returns the options", async () => {
-      setProcessArgV(["node", "zuniq", "test.txt", "-c"]);
+      setProcessArgV(["node", "zuniq", filePaths.testFilePath, "-c"]);
       const cli = new Cli();
       const options = cli.getOptions();
       expect(options).toEqual({
-        filePath: "test.txt",
+        filePath: filePaths.testFilePath,
         count: true,
         outputPath: undefined,
         repeated: false,
@@ -120,7 +121,7 @@ describe("cli", () => {
       setProcessArgV([
         "node",
         "zuniq",
-        "test.txt",
+        filePaths.testFilePath,
         "-c",
         "-o",
         "output.txt",
@@ -130,7 +131,7 @@ describe("cli", () => {
       const cli = new Cli();
       const options = cli.getOptions();
       expect(options).toEqual({
-        filePath: "test.txt",
+        filePath: filePaths.testFilePath,
         count: true,
         outputPath: "output.txt",
         repeated: true,
@@ -139,7 +140,7 @@ describe("cli", () => {
     });
 
     it.each(["-c", "--count", "-d", "--repeated", "-u", "--unique"])(
-      `should not consider this arg (%s) as filePath`,
+      `not consider this arg (%s) as filePath`,
       (flag) => {
         setProcessArgV(["node", "zuniq", flag]);
         const cli = new Cli();
@@ -153,5 +154,44 @@ describe("cli", () => {
         });
       }
     );
+  });
+
+  describe("run should", () => {
+    it("be defined", () => {
+      const cli = new Cli();
+      expect(cli.run).toBeDefined();
+    });
+
+    it("should call getOptions method", async () => {
+      const cli = new Cli();
+      const zuniqSpy = vi.spyOn(Zuniq, "zuniq");
+      zuniqSpy.mockResolvedValue({ out: "" });
+      const getOptionsSpy = vi.spyOn(cli, "getOptions");
+      await cli.run();
+      expect(getOptionsSpy).toBeCalled();
+    });
+
+    it("should call zuniq with the correct options", async () => {
+      setProcessArgV(["node", "zuniq", filePaths.testFilePath]);
+      const cli = new Cli();
+      const zuniqSpy = vi.spyOn(Zuniq, "zuniq");
+      await cli.run();
+      expect(zuniqSpy).toBeCalledWith({
+        filePath: filePaths.testFilePath,
+        count: false,
+        outputPath: undefined,
+        repeated: false,
+        unique: false,
+      });
+    });
+
+    it("logs the output from zuniq if output file is not set", async () => {
+      const cli = new Cli();
+      const zuniqSpy = vi.spyOn(Zuniq, "zuniq");
+      zuniqSpy.mockResolvedValue({ out: "output" });
+      const consoleLogSpy = vi.spyOn(console, "log");
+      await cli.run();
+      expect(consoleLogSpy).toBeCalledWith("output");
+    });
   });
 });
