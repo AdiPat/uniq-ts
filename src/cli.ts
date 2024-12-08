@@ -80,7 +80,8 @@ class Cli {
       .option("-o, --outputPath <outputPath>", "Path to the output file.")
       .option("-c, --count", "Print count of occurrences of each line.")
       .option("-d, --repeated", "Print only repeated lines.")
-      .option("-f, --filePath", "Path to the file.");
+      .option("-f, --filePath", "Path to the file.")
+      .option("-i, --ignore-case", "Ignore case distinctions when comparing.");
   };
 }
 

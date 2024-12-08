@@ -90,6 +90,26 @@ describe("cli", () => {
       ]);
     });
 
+    it("calls the option method to set the file path", async () => {
+      const cli = new Cli();
+      const optionSpy = vi.spyOn(cli.program, "option");
+      cli.getOptions();
+      expect(optionSpy.mock.calls[4]).toEqual([
+        "-f, --filePath",
+        "Path to the file.",
+      ]);
+    });
+
+    it("calls the option method to set the 'ignore-case' flag", async () => {
+      const cli = new Cli();
+      const optionSpy = vi.spyOn(cli.program, "option");
+      cli.getOptions();
+      expect(optionSpy.mock.calls[5]).toEqual([
+        "-i, --ignore-case",
+        "Ignore case distinctions when comparing.",
+      ]);
+    });
+
     it("calls the parse method with process.argv", async () => {
       setProcessArgV(["node", "zuniq", filePaths.testFilePath, "-c"]);
       const cli = new Cli();
