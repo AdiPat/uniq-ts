@@ -12,18 +12,27 @@ export async function zuniq(opts: zUniqOptions): Promise<{
   }
 
   if (opts.repeated) {
-    return processRepeatedLines(opts.filePath, opts.content, opts.count);
+    return processRepeatedLines(
+      opts.filePath,
+      opts.content,
+      opts.count,
+      opts.ignoreCase
+    );
   }
 
   let result = null;
   if (opts.filePath && opts.content) {
-    result = await processFilePathAndContent(opts.filePath, opts.content);
+    result = await processFilePathAndContent(
+      opts.filePath,
+      opts.content,
+      opts.ignoreCase
+    );
   } else if (opts.content) {
-    result = { out: await processContent(opts.content) };
+    result = { out: await processContent(opts.content, opts.ignoreCase) };
   } else {
     await assertFileExists(opts.filePath);
     const fileContent = await fs.readFile(opts.filePath, "utf-8");
-    result = { out: await processContent(fileContent) };
+    result = { out: await processContent(fileContent, opts.ignoreCase) };
   }
 
   if (opts.count) {
@@ -32,33 +41,67 @@ export async function zuniq(opts: zUniqOptions): Promise<{
     result.out = await getOutputWithCount(result.out, linesCount);
   }
 
-  if (!opts.outputFilePath) {
+  if (!opts.outputPath) {
     return result;
   }
 
-  await writeToOutputFile(opts.outputFilePath, result.out);
-
+  await writeToOutputFile(opts.outputPath, result.out);
   return result;
 }
 
-const processRepeatedLines = async (
-  filePath: string,
-  content: string,
-  count: boolean
-): Promise<zUniqBaseOutput> => {
-  const rawContent = await getRawContent(filePath, content);
-  const lines = rawContent.split("\n");
-  const linesCount = buildLinesCount(rawContent);
-  const repeatedLines = lines.filter((line) => linesCount[line] > 1);
+const lineFilter = (linesCount: LineCount) => (line: string) =>
+  linesCount[line] > 1;
+
+const processRepeatedLinesWithIgnoreCase = async (
+  rawContent: string,
+  countEnabled: boolean
+) => {
+  const ignoreCase = true;
+  const lineCountWithNoCase = buildLinesCount(rawContent, ignoreCase);
+  const lines = Object.keys(lineCountWithNoCase);
+  const repeatedLines = lines.filter(lineFilter(lineCountWithNoCase));
   const out = Array.from(new Set(repeatedLines)).join("\n");
 
-  if (count) {
+  if (countEnabled) {
+    return {
+      out: await getOutputWithCount(out, lineCountWithNoCase),
+    };
+  }
+
+  return { out };
+};
+
+const processRepeatedLinesWitoutIgnoreCase = async (
+  rawContent: string,
+  countEnabled: boolean
+) => {
+  const linesCount = buildLinesCount(rawContent);
+
+  const repeatedLines = Object.keys(linesCount).filter(lineFilter(linesCount));
+  const out = Array.from(new Set(repeatedLines)).join("\n");
+
+  if (countEnabled) {
     return {
       out: await getOutputWithCount(out, linesCount),
     };
   }
 
   return { out };
+};
+
+const processRepeatedLines = async (
+  filePath: string,
+  content: string,
+  count: boolean,
+  ignoreCase: boolean
+): Promise<zUniqBaseOutput> => {
+  const rawContent = await getRawContent(filePath, content);
+
+  if (ignoreCase) {
+    return processRepeatedLinesWithIgnoreCase(rawContent, count);
+  }
+
+  return processRepeatedLinesWitoutIgnoreCase(rawContent, count);
 };
 
 const getRawContent = async (
@@ -83,7 +126,35 @@ const getRawContent = async (
   return rawContent;
 };
 
-const buildLinesCount = (rawContent: string): LineCount => {
+const findLineKey = (caseInsensitiveLinesCount: LineCount, line: string) => {
+  let lineKey = "";
+  Object.keys(caseInsensitiveLinesCount).forEach((key) => {
+    if (key.toLowerCase() === line.toLowerCase()) {
+      lineKey = key;
+    }
+  });
+  return lineKey;
+};
+
+const updateLinesCount = (line: string, lineCount: LineCount) => {
+  const lowerCaseLine = line.toLowerCase();
+  let lineKey = findLineKey(lineCount, lowerCaseLine);
+
+  if (lineKey) {
+    lineCount[lineKey] += 1;
+  } else {
+    lineCount[line] = 1;
+  }
+};
+
+const buildCaseInsensitiveLinesCount = (rawContent: string): LineCount => {
+  const lines = rawContent.split("\n");
+  let caseInsensitiveLinesCount: LineCount = {};
+  lines.forEach((line) => updateLinesCount(line, caseInsensitiveLinesCount));
+  return caseInsensitiveLinesCount;
+};
+
+const buildCaseSensitiveLineCount = (rawContent: string): LineCount => {
   const lines = rawContent.split("\n");
   const linesCount: LineCount = {};
 
@@ -94,13 +165,25 @@ const buildLinesCount = (rawContent: string): LineCount => {
   return linesCount;
 };
 
+const buildLinesCount = (
+  rawContent: string,
+  caseSensitive = false
+): LineCount => {
+  if (caseSensitive) {
+    return buildCaseInsensitiveLinesCount(rawContent);
+  }
+
+  return buildCaseSensitiveLineCount(rawContent);
+};
+
 const getOutputWithCount = async (
   rawContent: string,
   linesCount: LineCount
 ): Promise<string> => {
   const outputLines = rawContent.split("\n");
   const outputWithCount = outputLines.map((line) => {
-    const count = linesCount[line];
+    const key = findLineKey(linesCount, line);
+    const count = linesCount[key];
     return `${count} ${line}`;
   });
   return outputWithCount.join("\n");
@@ -129,7 +212,8 @@ const writeToOutputFile = async (
 
 const processFilePathAndContent = async (
   filePath: string,
-  content: string
+  content: string,
+  ignoreCase: boolean
 ): Promise<zUniqBaseOutput> => {
   const fileExists = await assertFileExists(filePath)
     .then(() => true)
@@ -143,7 +227,7 @@ const processFilePathAndContent = async (
     `Warning: Invalid file path '${filePath}'. Using provided content.`
   );
   return {
-    out: processContent(content),
+    out: processContent(content, ignoreCase),
   };
 };
 
@@ -164,7 +248,20 @@ const updateTrailingNewlines = (
   }
 };
 
-const processContent = (content: string): string => {
+const compareLineWithPreviousLine = (
+  line: string,
+  index: number,
+  lines: string[],
+  ignoreCase: boolean
+) => {
+  if (ignoreCase) {
+    return index === 0 || lines[index - 1].toLowerCase() !== line.toLowerCase();
+  }
+
+  return index === 0 || lines[index - 1] !== line;
+};
+
+const processContent = (content: string, ignoreCase: boolean): string => {
   const lines = content.split("\n");
   const uniqueLines = lines.filter((line, index) => {
     line = line.replace(/\r/g, "");
@@ -172,7 +269,8 @@ const processContent = (content: string): string => {
     if (line == "") {
       return true; // keep empty lines
     }
-    return index === 0 || lines[index - 1] !== line;
+
+    return compareLineWithPreviousLine(line, index, lines, ignoreCase);
   });
 
   const outWithDuplicateNewslines = uniqueLines.join("\n");

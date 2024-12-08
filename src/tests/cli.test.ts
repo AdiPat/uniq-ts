@@ -90,6 +90,40 @@ describe("cli", () => {
       ]);
     });
 
+    it("calls the option method to set the file path", async () => {
+      const cli = new Cli();
+      const optionSpy = vi.spyOn(cli.program, "option");
+      cli.getOptions();
+      expect(optionSpy.mock.calls[4]).toEqual([
+        "-f, --filePath",
+        "Path to the file.",
+      ]);
+    });
+
+    it("calls the option method to set the 'ignore-case' flag", async () => {
+      const cli = new Cli();
+      const optionSpy = vi.spyOn(cli.program, "option");
+      cli.getOptions();
+      expect(optionSpy.mock.calls[5]).toEqual([
+        "-i, --ignore-case",
+        "Ignore case distinctions when comparing.",
+      ]);
+    });
+
+    it("sets ignore case flag to true if -i flag is passed", async () => {
+      setProcessArgV(["node", "zuniq", filePaths.testFilePath, "-i"]);
+      const cli = new Cli();
+      const options = cli.getOptions();
+      expect(options.ignoreCase).toBe(true);
+    });
+
+    it("sets ignore case flag to false if -i flag is not passed", async () => {
+      setProcessArgV(["node", "zuniq", filePaths.testFilePath]);
+      const cli = new Cli();
+      const options = cli.getOptions();
+      expect(options.ignoreCase).toBe(false);
+    });
+
     it("calls the parse method with process.argv", async () => {
       setProcessArgV(["node", "zuniq", filePaths.testFilePath, "-c"]);
       const cli = new Cli();
@@ -115,6 +149,7 @@ describe("cli", () => {
         outputPath: undefined,
         repeated: false,
         unique: false,
+        ignoreCase: false,
       });
     });
 
@@ -137,6 +172,7 @@ describe("cli", () => {
         outputPath: "output.txt",
         repeated: true,
         unique: true,
+        ignoreCase: false,
       });
     });
 
@@ -152,6 +188,7 @@ describe("cli", () => {
           outputPath: undefined,
           repeated: flag === "-d" || flag === "--repeated",
           unique: flag === "-u" || flag === "--unique",
+          ignoreCase: false,
         });
       }
     );
@@ -183,6 +220,7 @@ describe("cli", () => {
         outputPath: undefined,
         repeated: false,
         unique: false,
+        ignoreCase: false,
       });
     });
 
@@ -210,6 +248,7 @@ describe("cli", () => {
         outputPath: undefined,
         repeated: false,
         unique: false,
+        ignoreCase: false,
       });
     });
   });
