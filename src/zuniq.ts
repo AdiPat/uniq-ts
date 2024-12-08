@@ -38,7 +38,7 @@ export async function zuniq(opts: zUniqOptions): Promise<{
   if (opts.count) {
     let rawContent = await getRawContent(opts.filePath, opts.content);
     const linesCount = buildLinesCount(rawContent);
-    result.out = await getOutputWithCount(result.out, linesCount, opts.count);
+    result.out = await getOutputWithCount(result.out, linesCount);
   }
 
   if (!opts.outputPath) {
@@ -49,6 +49,46 @@ export async function zuniq(opts: zUniqOptions): Promise<{
   return result;
 }
 
+const lineFilter = (linesCount: LineCount) => (line: string) =>
+  linesCount[line] > 1;
+
+const processRepeatedLinesWithIgnoreCase = async (
+  rawContent: string,
+  countEnabled: boolean
+) => {
+  const ignoreCase = true;
+  const lineCountWithNoCase = buildLinesCount(rawContent, ignoreCase);
+  const lines = Object.keys(lineCountWithNoCase);
+  const repeatedLines = lines.filter(lineFilter(lineCountWithNoCase));
+  const out = Array.from(new Set(repeatedLines)).join("\n");
+
+  if (countEnabled) {
+    return {
+      out: await getOutputWithCount(out, lineCountWithNoCase),
+    };
+  }
+
+  return { out };
+};
+
+const processRepeatedLinesWitoutIgnoreCase = async (
+  rawContent: string,
+  countEnabled: boolean
+) => {
+  const linesCount = buildLinesCount(rawContent);
+
+  const repeatedLines = Object.keys(linesCount).filter(lineFilter(linesCount));
+  const out = Array.from(new Set(repeatedLines)).join("\n");
+
+  if (countEnabled) {
+    return {
+      out: await getOutputWithCount(out, linesCount),
+    };
+  }
+
+  return { out };
+};
+
 const processRepeatedLines = async (
   filePath: string,
   content: string,
@@ -56,36 +96,12 @@ const processRepeatedLines = async (
   ignoreCase: boolean
 ): Promise<zUniqBaseOutput> => {
   const rawContent = await getRawContent(filePath, content);
-  const lines = rawContent.split("\n");
+
   if (ignoreCase) {
-    const caseInsensitiveLinesCount: LineCount = buildLinesCount(
-      rawContent,
-      ignoreCase
-    );
-    const repeatedLines = Object.keys(caseInsensitiveLinesCount).filter(
-      (line) => caseInsensitiveLinesCount[line] > 1
-    );
-    const out = Array.from(new Set(repeatedLines)).join("\n");
-
-    if (count) {
-      return {
-        out: await getOutputWithCount(out, caseInsensitiveLinesCount, count),
-      };
-    }
-
-    return { out };
-  }
-  const linesCount = buildLinesCount(rawContent);
-  const repeatedLines = lines.filter((line) => linesCount[line] > 1);
-  const out = Array.from(new Set(repeatedLines)).join("\n");
-
-  if (count) {
-    return {
-      out: await getOutputWithCount(out, linesCount, count),
-    };
+    return processRepeatedLinesWithIgnoreCase(rawContent, count);
   }
 
-  return { out };
+  return processRepeatedLinesWitoutIgnoreCase(rawContent, count);
 };
 
 const getRawContent = async (
@@ -120,21 +136,21 @@ const findLineKey = (caseInsensitiveLinesCount: LineCount, line: string) => {
   return lineKey;
 };
 
+const updateLinesCount = (line: string, lineCount: LineCount) => {
+  const lowerCaseLine = line.toLowerCase();
+  let lineKey = findLineKey(lineCount, lowerCaseLine);
+
+  if (lineKey) {
+    lineCount[lineKey] += 1;
+  } else {
+    lineCount[line] = 1;
+  }
+};
+
 const buildCaseInsensitiveLinesCount = (rawContent: string): LineCount => {
   const lines = rawContent.split("\n");
-  const caseInsensitiveLinesCount: LineCount = {};
-
-  lines.forEach((line) => {
-    const lowerCaseLine = line.toLowerCase();
-    let lineKey = findLineKey(caseInsensitiveLinesCount, lowerCaseLine);
-
-    if (lineKey) {
-      caseInsensitiveLinesCount[lineKey] += 1;
-    } else {
-      caseInsensitiveLinesCount[line] = 1;
-    }
-  });
-
+  let caseInsensitiveLinesCount: LineCount = {};
+  lines.forEach((line) => updateLinesCount(line, caseInsensitiveLinesCount));
   return caseInsensitiveLinesCount;
 };
 
@@ -162,18 +178,12 @@ const buildLinesCount = (
 
 const getOutputWithCount = async (
   rawContent: string,
-  linesCount: LineCount,
-  countEnabled: boolean
+  linesCount: LineCount
 ): Promise<string> => {
   const outputLines = rawContent.split("\n");
   const outputWithCount = outputLines.map((line) => {
-    if (countEnabled) {
-      const key = findLineKey(linesCount, line);
-      const count = linesCount[key];
-      return `${count} ${line}`;
-    }
-
-    const count = linesCount[line];
+    const key = findLineKey(linesCount, line);
+    const count = linesCount[key];
     return `${count} ${line}`;
   });
   return outputWithCount.join("\n");
