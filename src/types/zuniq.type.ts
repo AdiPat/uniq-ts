@@ -13,6 +13,7 @@ export interface CliOptions {
   count?: boolean;
   repeated?: boolean;
   unique?: boolean;
+  ignoreCase?: boolean;
 }
 
 export interface zUniqBaseOutput {

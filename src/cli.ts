@@ -71,6 +71,7 @@ class Cli {
       count: Boolean(options.count),
       repeated: Boolean(options.repeated),
       unique: Boolean(options.unique),
+      ignoreCase: Boolean(options.ignoreCase),
     };
   };
 
