@@ -38,7 +38,7 @@ export async function zuniq(opts: zUniqOptions): Promise<{
   if (opts.count) {
     let rawContent = await getRawContent(opts.filePath, opts.content);
     const linesCount = buildLinesCount(rawContent);
-    result.out = await getOutputWithCount(result.out, linesCount);
+    result.out = await getOutputWithCount(result.out, linesCount, opts.count);
   }
 
   if (!opts.outputFilePath) {
@@ -46,7 +46,6 @@ export async function zuniq(opts: zUniqOptions): Promise<{
   }
 
   await writeToOutputFile(opts.outputFilePath, result.out);
-
   return result;
 }
 
@@ -58,7 +57,6 @@ const processRepeatedLines = async (
 ): Promise<zUniqBaseOutput> => {
   const rawContent = await getRawContent(filePath, content);
   const lines = rawContent.split("\n");
-
   if (ignoreCase) {
     const caseInsensitiveLinesCount: LineCount = buildLinesCount(
       rawContent,
@@ -71,7 +69,7 @@ const processRepeatedLines = async (
 
     if (count) {
       return {
-        out: await getOutputWithCount(out, caseInsensitiveLinesCount),
+        out: await getOutputWithCount(out, caseInsensitiveLinesCount, count),
       };
     }
 
@@ -83,7 +81,7 @@ const processRepeatedLines = async (
 
   if (count) {
     return {
-      out: await getOutputWithCount(out, linesCount),
+      out: await getOutputWithCount(out, linesCount, count),
     };
   }
 
@@ -164,10 +162,17 @@ const buildLinesCount = (
 
 const getOutputWithCount = async (
   rawContent: string,
-  linesCount: LineCount
+  linesCount: LineCount,
+  countEnabled: boolean
 ): Promise<string> => {
   const outputLines = rawContent.split("\n");
   const outputWithCount = outputLines.map((line) => {
+    if (countEnabled) {
+      const key = findLineKey(linesCount, line);
+      const count = linesCount[key];
+      return `${count} ${line}`;
+    }
+
     const count = linesCount[line];
     return `${count} ${line}`;
   });

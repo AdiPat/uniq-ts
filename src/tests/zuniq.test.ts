@@ -260,6 +260,17 @@ describe("zuniq", () => {
       });
       expect(out).toEqual("liNe1\nline2\nLinE3");
     });
+
+    it("should include the count of lines when 'count' is true and 'repeated' is true", async () => {
+      const content = "line1\nLine1\nline2\nLine2\nline3\nLine3";
+      const { out } = await zuniq({
+        content,
+        ignoreCase: true,
+        count: true,
+        repeated: true,
+      });
+      expect(out).toEqual("2 line1\n2 line2\n2 line3");
+    });
   });
 
   describe("input format variations should", () => {
