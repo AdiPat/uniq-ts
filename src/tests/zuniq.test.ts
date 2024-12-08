@@ -234,6 +234,34 @@ describe("zuniq", () => {
     });
   });
 
+  describe("when 'ignoreCase' is true", () => {
+    it("should ignore case when comparing lines", async () => {
+      const content = "line1\nLine1\nline2\nLine2\nline3\nLine3";
+      const { out } = await zuniq({ content, ignoreCase: true });
+      expect(out).toEqual("line1\nline2\nline3");
+    });
+
+    it("should ignore case when comparing lines and when 'repeated' is true", async () => {
+      const content = "line1\nLine1\nline2\nLine2\nline3\nLine3";
+      const { out } = await zuniq({
+        content,
+        ignoreCase: true,
+        repeated: true,
+      });
+      expect(out).toEqual("line1\nline2\nline3");
+    });
+
+    it("should use the first instance of the line when 'repeated' is true", async () => {
+      const content = "liNe1\nLine1\nline2\nLine2\nLinE3\nLine3";
+      const { out } = await zuniq({
+        content,
+        ignoreCase: true,
+        repeated: true,
+      });
+      expect(out).toEqual("liNe1\nline2\nLinE3");
+    });
+  });
+
   describe("input format variations should", () => {
     it("handle mixed line endings", async () => {
       const content = "line1\nline1\r\nline2\nline2\r\nline3\nline3\r\n";

@@ -5,6 +5,7 @@ export interface zUniqOptions {
   count?: boolean;
   repeated?: boolean;
   unique?: boolean;
+  ignoreCase?: boolean;
 }
 
 export interface CliOptions {
