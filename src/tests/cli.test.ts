@@ -220,6 +220,7 @@ describe("cli", () => {
         outputPath: undefined,
         repeated: false,
         unique: false,
+        ignoreCase: false,
       });
     });
 
@@ -247,6 +248,7 @@ describe("cli", () => {
         outputPath: undefined,
         repeated: false,
         unique: false,
+        ignoreCase: false,
       });
     });
   });

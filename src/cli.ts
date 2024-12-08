@@ -19,11 +19,7 @@ class Cli {
 
     const zUniqOptions: zUniqOptions = {
       ...(content && { content }),
-      filePath: options.filePath,
-      outputFilePath: options.outputPath,
-      count: options.count,
-      repeated: options.repeated,
-      unique: options.unique,
+      ...options,
     };
     const { out } = await zuniq(zUniqOptions);
     console.log(out);
