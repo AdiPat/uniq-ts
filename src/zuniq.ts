@@ -41,11 +41,11 @@ export async function zuniq(opts: zUniqOptions): Promise<{
     result.out = await getOutputWithCount(result.out, linesCount, opts.count);
   }
 
-  if (!opts.outputFilePath) {
+  if (!opts.outputPath) {
     return result;
   }
 
-  await writeToOutputFile(opts.outputFilePath, result.out);
+  await writeToOutputFile(opts.outputPath, result.out);
   return result;
 }
 

@@ -7,7 +7,7 @@ describe("zuniq", () => {
   const {
     countriesFilePath,
     errorBothFileAndContent,
-    outputFilePath,
+    outputPath,
     testFilePath,
     testFilePathWithNewlineEnd,
     warningInvalidPathValidContent,
@@ -18,7 +18,7 @@ describe("zuniq", () => {
 
   afterEach(async () => {
     vi.restoreAllMocks();
-    await removeFile(outputFilePath);
+    await removeFile(outputPath);
   });
 
   describe("basic functionality should", () => {
@@ -79,19 +79,19 @@ describe("zuniq", () => {
 
   describe("when 'outputFilePath' is provided", () => {
     it("write to provided output file if provided", async () => {
-      const outputFilePath = "./test_data/output-2.txt";
-      await zuniq({ filePath: testFilePath, outputFilePath });
-      const outputContent = fs.readFileSync(outputFilePath, "utf-8");
+      const outputPath = "./test_data/output-2.txt";
+      await zuniq({ filePath: testFilePath, outputPath });
+      const outputContent = fs.readFileSync(outputPath, "utf-8");
       expect(outputContent).toEqual(
         ["line1", "line2", "line3", "line4"].join("\n")
       );
-      await removeFile(outputFilePath);
+      await removeFile(outputPath);
     });
 
     it("throw an error if writing to the output file failed", async () => {
       const promise = zuniq({
         filePath: testFilePath,
-        outputFilePath: "/invalid_path/output.txt",
+        outputPath: "/invalid_path/output.txt",
       });
       await expect(promise).rejects.toThrow(
         "Error: Invalid file path '/invalid_path/output.txt'"
@@ -129,10 +129,10 @@ describe("zuniq", () => {
     it("include 'count' of number of times line appears in the input in the output file when specified", async () => {
       await zuniq({
         filePath: testFilePath,
-        outputFilePath,
+        outputPath,
         count: true,
       });
-      const outputContent = fs.readFileSync(outputFilePath, "utf-8");
+      const outputContent = fs.readFileSync(outputPath, "utf-8");
       expect(outputContent).toEqual(
         ["1 line1", "2 line2", "1 line3", "1 line4"].join("\n")
       );

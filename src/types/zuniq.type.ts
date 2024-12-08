@@ -1,14 +1,4 @@
-export interface zUniqOptions {
-  filePath?: string;
-  content?: string;
-  outputFilePath?: string;
-  count?: boolean;
-  repeated?: boolean;
-  unique?: boolean;
-  ignoreCase?: boolean;
-}
-
-export interface CliOptions {
+export interface zUniqBaseOptions {
   filePath?: string;
   outputPath?: string;
   count?: boolean;
@@ -16,6 +6,12 @@ export interface CliOptions {
   unique?: boolean;
   ignoreCase?: boolean;
 }
+
+export interface zUniqOptions extends zUniqBaseOptions {
+  content?: string;
+}
+
+export interface CliOptions extends zUniqBaseOptions {}
 
 export interface zUniqBaseOutput {
   out: string;
